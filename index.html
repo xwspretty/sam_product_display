@@ -8,142 +8,176 @@
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f0f0f0;
         }
 
         .container {
+            display: flex;
             max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
+            margin: 20px auto;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .main-content {
-            flex: 3;
-            min-width: 300px;
+        /* 左侧分组列表 */
+        .group-list {
+            width: 200px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            height: calc(100vh - 40px);
+            /* 视口高度减去上下margin */
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
+        .group-item {
+            padding: 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+            color: #333;
+            transition: background-color 0.2s;
         }
 
-        button:hover {
-            background-color: #45a049;
+        .group-item:hover,
+        .group-item.active {
+            background-color: #f8f8f8;
+            color: #007bff;
         }
 
-        input[type="range"] {
-            width: 150px;
-        }
-
-        /* 分组滚动墙样式 */
-        .gallery-wall {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .group-container {
+        /* 右侧商品展示 */
+        .product-list {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 40px);
+            /* 视口高度减去上下margin */
             position: relative;
+            /* 用于定位加载指示器 */
         }
 
-        .group-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-            padding-left: 10px;
-            border-left: 4px solid #4CAF50;
-        }
-
-        .group-scroller {
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-behavior: smooth;
-            padding-bottom: 10px;
-        }
-
-        .group-scroller::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .group-scroller::-webkit-scrollbar-thumb {
-            background: #4CAF50;
-            border-radius: 4px;
-        }
-
-        .group-scroller::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        .horizontal-gallery {
+        .product-item {
             display: flex;
-            gap: 15px;
-            padding: 10px;
-            width: max-content;
+            flex-direction: column; /* 垂直排列 */
+            align-items: flex-start; /* 左对齐 */
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
         }
 
-        .horizontal-gallery img {
-            max-width: 250px;
-            max-height: 160px;
+        .product-item img {
+            max-width: 120px;
+            max-height: 120px;
             object-fit: contain;
-            border-radius: 6px;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-            transition: transform 0.3s;
+            border-radius: 4px;
+            margin-bottom: 10px; /* 名称和图片间距 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
             cursor: pointer;
         }
 
-        .horizontal-gallery img:hover {
-            transform: scale(1.03);
+        .product-info {
+            width: 100%; /* 占据一行 */
         }
 
-        /* 图片放大效果 */
+        .product-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
+            line-height: 1.2;
+            height: 2.4em;
+            font-size: 14px;
+        }
+
+        .product-name:hover::after {
+            content: "点击复制";
+            position: absolute;
+            top: -2px;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .product-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 联系我们（二维码）分组特殊样式 */
+        #contact-group {
+            text-align: center;
+        }
+
+        #contact-group img {
+            max-width: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* 加载指示器 */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* 空状态提示 */
+        .empty-state {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+
+        /* 模态框样式 */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.9);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: opacity 0.3s ease;
         }
 
         .modal-overlay.active {
@@ -153,286 +187,409 @@
 
         .modal-content {
             position: relative;
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 95%;
+            max-height: 95%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .modal-content img {
-            max-width: 100%;
-            max-height: 90vh;
+        .modal-image {
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
-            border-radius: 8px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .close-btn {
+        /* 调整关闭按钮定位 */
+        .modal-close-btn {
             position: absolute;
-            top: -40px;
-            right: -10px;
-            background-color: #ff5a5f;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
             color: white;
-            width: 30px;
-            height: 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            transition: transform 0.3s;
+            transition: background-color 0.3s ease;
+            z-index: 1001;
         }
 
-        .close-btn:hover {
-            transform: rotate(90deg);
+        .modal-close-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
         }
 
-        /* 滚动提示样式 */
-        .scroll-hint {
+        .modal-arrow {
             position: absolute;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 36px;
+            padding: 15px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease, background-color 0.2s ease;
+        }
+
+        .modal-arrow:hover {
+            opacity: 1;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-prev {
+            left: 20px;
+        }
+
+        .modal-next {
+            right: 20px;
+        }
+
+        /* 自定义滚动条样式 (Webkit) */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Toast 提示框样式 */
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 10;
-            white-space: nowrap;
-            font-size: 14px;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
         }
 
-        .group-scroller.has-scrollbar:hover .scroll-hint,
-        .group-scroller.has-scrollbar.touched .scroll-hint {
+        #toast.show {
             opacity: 1;
             visibility: visible;
-        }
-
-        /* 移除滚动提示一段时间后自动隐藏 */
-        @keyframes hide-scroll-hint {
-            0% {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            99% {
-                opacity: 0;
-                visibility: visible;
-            }
-
-            100% {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
-
-        /* 群二维码区域样式 */
-        .qrcode-container {
-            flex: 1;
-            min-width: 200px;
-            text-align: center;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-        }
-
-        .qrcode-container img {
-            max-width: 200px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
-        }
-
-        .qrcode-container p {
-            font-size: 16px;
-            color: #333;
-            margin-top: 10px;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="main-content">
-            <h1>山姆商品展示栏</h1>
-
-            <div class="gallery-wall" id="galleryWall">
-                <!-- 分组将通过JavaScript动态添加 -->
+        <div class="group-list" id="groupList">
+            <div class="group-item active" id="contact-group" data-group-id="contact">
+                联系我们
+                <img src="qrcode.png" alt="群二维码">
+                <p style="font-size: 14px; color: #333;">扫码加入，获取更多信息</p>
             </div>
         </div>
-        <!-- 群二维码展示区域 -->
-        <div class="qrcode-container">
-            <img src="qrcode.png" alt="群二维码">
-            <p>扫码加入我们的群，获取更多商品信息！</p>
+
+        <div class="product-list" id="productList">
+            <div class="loading-indicator"></div>
         </div>
     </div>
 
-    <!-- 图片放大模态框 -->
     <div class="modal-overlay" id="imageModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeModal">&times;</button>
-            <img id="modalImage" src="" alt="放大图片">
+            <img class="modal-image" id="modalImage" src="" alt="商品图片">
+            <button class="modal-arrow modal-prev" id="modalPrevBtn">&#10094;</button>
+            <button class="modal-arrow modal-next" id="modalNextBtn">&#10095;</button>
         </div>
+        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
     </div>
+
+    <div id="toast"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
-            const galleryWall = document.getElementById('galleryWall');
+            const groupList = document.getElementById('groupList');
+            const productList = document.getElementById('productList');
             const imageModal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
-            const closeModalBtn = document.getElementById('closeModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalPrevBtn = document.getElementById('modalPrevBtn');
+            const modalNextBtn = document.getElementById('modalNextBtn');
+            const toast = document.getElementById('toast');
 
-            let autoScrollEnabled = false; // 默认关闭自动滚动
-            let scrollIntervals = [];
+            let groupsData = {};
+            let imagesData = [];
+            let firstGroupId = null;
+            let currentGroupImages = [];
+            let currentImageIndex = 0;
+            let touchStartX = 0;
 
-            // 从txt文件读取分组信息
-            async function readGroups() {
+            // 读取分组数据
+            async function fetchGroups() {
                 try {
                     const response = await fetch('groups.txt');
                     const text = await response.text();
                     const lines = text.split('\n');
-                    const groups = {};
+                    let isFirstGroupSet = false;
                     lines.forEach(line => {
                         if (line.trim()) {
                             const [id, title] = line.split(',');
-                            groups[id] = { id, title, images: [] };
+                            groupsData[id] = { id, title };
+                            if (!isFirstGroupSet && id !== 'contact') {
+                                firstGroupId = id;
+                                isFirstGroupSet = true;
+                            }
                         }
                     });
-                    return groups;
                 } catch (error) {
-                    console.error('读取分组信息出错:', error);
-                    return {};
+                    console.error('Error fetching groups:', error);
                 }
             }
 
-            // 从txt文件读取图片信息
-            async function readImages() {
+            // 读取图片数据
+            async function fetchImages() {
                 try {
                     const response = await fetch('images.txt');
                     const text = await response.text();
                     const lines = text.split('\n');
-                    return lines.filter(line => line.trim());
+                    imagesData = lines.filter(line => line.trim()).map(line => {
+                        const parts = line.split(',');
+                        let showName = parts.length > 1 && parts.slice(1).join(',').trim() !== '';
+                        return {
+                            url: parts[0],
+                            name: showName ? parts.slice(1).join(',').trim() : '',
+                            showName: showName,
+                            loaded: false
+                        };
+                    });
                 } catch (error) {
-                    console.error('读取图片信息出错:', error);
-                    return [];
+                    console.error('Error fetching images:', error);
                 }
             }
 
-            // 初始化图片墙
-            async function initGalleryWall() {
-                galleryWall.innerHTML = '';
-                scrollIntervals = [];
+            // 创建分组列表
+            function renderGroups() {
+                const groupsFragment = document.createDocumentFragment();
+                for (const id in groupsData) {
+                    if (id === 'contact') continue;
+                    const group = groupsData[id];
+                    const groupElement = document.createElement('div');
+                    groupElement.classList.add('group-item');
+                    groupElement.textContent = group.title;
+                    groupElement.dataset.groupId = group.id;
+                    groupElement.addEventListener('click', handleGroupClick);
+                    groupsFragment.appendChild(groupElement);
+                }
+                groupList.appendChild(groupsFragment);
+            }
 
-                const groups = await readGroups();
-                const imageUrls = await readImages();
+            // 处理分组点击事件
+            function handleGroupClick(event) {
+                const groupId = event.target.dataset.groupId;
+                setActiveGroup(groupId);
+            }
 
-                // 按分组整理图片
-                imageUrls.forEach(url => {
-                    const [groupId] = url.split('/');
-                    if (groups[groupId]) {
-                        groups[groupId].images.push(url);
+            // 设置激活分组并显示商品
+            function setActiveGroup(groupId) {
+                document.querySelectorAll('.group-item').forEach(item => item.classList.remove('active'));
+                const activeGroup = document.querySelector(`.group-item[data-group-id="${groupId}"]`);
+                if (activeGroup) {
+                    activeGroup.classList.add('active');
+                }
+                renderProducts(groupId);
+            }
+
+            // 渲染商品列表
+            function renderProducts(groupId) {
+                productList.innerHTML = '<div class="loading-indicator"></div>';
+                const filteredImages = imagesData.filter(img => img.url.startsWith(groupId + '/'));
+                currentGroupImages = filteredImages;
+
+                productList.innerHTML = '';
+
+                if (filteredImages.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.classList.add('empty-state');
+                    emptyState.textContent = '该分组暂无商品';
+                    productList.appendChild(emptyState);
+                    return;
+                }
+
+                const productFragment = document.createDocumentFragment();
+
+                filteredImages.forEach((img, index) => {
+                    const productElement = document.createElement('div');
+                    productElement.classList.add('product-item');
+
+                    const imgElement = document.createElement('img');
+                    imgElement.src = img.loaded ? img.url : '';
+                    imgElement.dataset.src = img.url;
+                    imgElement.dataset.index = index;
+                    imgElement.onload = () => {
+                        img.loaded = true;
+                    };
+                    imgElement.addEventListener('click', openModal);
+
+                    productElement.appendChild(imgElement);
+
+                    const infoElement = document.createElement('div');
+                    infoElement.classList.add('product-info');
+
+                    if (img.showName) {
+                        const nameElement = document.createElement('h3');
+                        nameElement.classList.add('product-name');
+                        nameElement.textContent = img.name || '商品名称';
+                        nameElement.addEventListener('click', () => copyToClipboard(img.name));
+                        nameElement.title = img.name || '商品名称';
+                        infoElement.appendChild(nameElement);
                     }
+
+                    productElement.appendChild(infoElement);
+                    productFragment.appendChild(productElement);
                 });
 
-                for (const groupId in groups) {
-                    const group = groups[groupId];
+                productList.appendChild(productFragment);
+                lazyLoadImages();
 
-                    const groupContainer = document.createElement('div');
-                    groupContainer.className = 'group-container';
+            }
 
-                    const titleElement = document.createElement('h2');
-                    titleElement.className = 'group-title';
-                    titleElement.textContent = group.title;
-
-                    const scroller = document.createElement('div');
-                    scroller.className = 'group-scroller';
-
-                    // 添加滚动提示
-                    const scrollHint = document.createElement('div');
-                    scrollHint.className = 'scroll-hint';
-                    scrollHint.textContent = '可横向滚动查看图片';
-                    scroller.appendChild(scrollHint);
-
-                    const gallery = document.createElement('div');
-                    gallery.className = 'horizontal-gallery';
-
-                    // 添加图片到横向画廊
-                    group.images.forEach(imageUrl => {
-                        const img = document.createElement('img');
-                        img.src = imageUrl;
-                        img.alt = group.title + '图片';
-                        img.addEventListener('click', () => openModal(imageUrl));
-                        gallery.appendChild(img);
+            // 懒加载图片
+            function lazyLoadImages() {
+                const images = productList.querySelectorAll('img[data-src]');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            observer.unobserve(img);
+                        }
                     });
+                });
 
-                    scroller.appendChild(gallery);
-                    groupContainer.appendChild(titleElement);
-                    groupContainer.appendChild(scroller);
-                    galleryWall.appendChild(groupContainer);
+                images.forEach(img => observer.observe(img));
+            }
 
-                    // 检查是否需要克隆图片和启用滚动效果
-                    const galleryWidth = gallery.scrollWidth;
-                    const scrollerWidth = scroller.clientWidth;
-                    if (galleryWidth > scrollerWidth) {
-                        // 添加克隆图片实现无缝滚动
-                        group.images.forEach(imageUrl => {
-                            const img = document.createElement('img');
-                            img.src = imageUrl;
-                            img.alt = group.title + '图片';
-                            img.addEventListener('click', () => openModal(imageUrl));
-                            gallery.appendChild(img);
-                        });
+            // 打开模态框显示图片
+            function openModal(event) {
+                const clickedImage = event.target;
+                currentImageIndex = parseInt(clickedImage.dataset.index);
+                updateModalImage();
+                imageModal.classList.add('active');
+            }
 
-                        scroller.classList.add('has-scrollbar');
-                    }
-
-                    // 处理触摸事件
-                    scroller.addEventListener('touchstart', function () {
-                        this.classList.add('touched');
-                        // 一段时间后自动隐藏提示
-                        setTimeout(() => {
-                            this.classList.remove('touched');
-                        }, 3000);
-                    });
+            // 更新模态框图片
+            function updateModalImage() {
+                if (currentGroupImages.length > 0) {
+                    modalImage.src = currentGroupImages[currentImageIndex].url;
                 }
             }
 
-            // 打开图片模态框
-            function openModal(imageUrl) {
-                modalImage.src = imageUrl;
-                imageModal.classList.add('active');
-                document.body.style.overflow = 'hidden'; // 防止背景滚动
-            }
-
-            // 关闭图片模态框
+            // 关闭模态框
             function closeModal() {
                 imageModal.classList.remove('active');
-                document.body.style.overflow = ''; // 恢复背景滚动
             }
 
-            // 点击模态框外部关闭
-            imageModal.addEventListener('click', function (e) {
-                if (e.target === this) {
-                    closeModal();
+            // 显示上一张图片
+            function showPreviousImage() {
+                currentImageIndex = (currentImageIndex - 1 + currentGroupImages.length) % currentGroupImages.length;
+                updateModalImage();
+            }
+
+            // 显示下一张图片
+            function showNextImage() {
+                currentImageIndex = (currentImageIndex + 1) % currentGroupImages.length;
+                updateModalImage();
+            }
+
+            // 处理触摸开始
+            function handleTouchStart(event) {
+                touchStartX = event.touches[0].clientX;
+            }
+
+            // 处理触摸移动
+            function handleTouchMove(event) {
+                if (!imageModal.classList.contains('active')) return;
+
+                const touchEndX = event.touches[0].clientX;
+                const deltaX = touchEndX - touchStartX;
+
+                if (Math.abs(deltaX) > 50) {
+                    if (deltaX > 0) {
+                        showPreviousImage();
+                    } else {
+                        showNextImage();
+                    }
+                    touchStartX = touchEndX;
                 }
-            });
-
-            // 点击关闭按钮
-            closeModalBtn.addEventListener('click', closeModal);
-
-            // 按ESC键关闭
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && imageModal.classList.contains('active')) {
-                    closeModal();
-                }
-            });
-
+            }
 
             // 初始化
-            await initGalleryWall();
+            async function initializePage() {
+                await fetchGroups();
+                await fetchImages();
+                renderGroups();
+                setActiveGroup(firstGroupId || 'contact');
+            }
+
+            initializePage();
+
+            // 模态框事件监听
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalPrevBtn.addEventListener('click', showPreviousImage);
+            modalNextBtn.addEventListener('click', showNextImage);
+            imageModal.addEventListener('touchstart', handleTouchStart);
+            imageModal.addEventListener('touchmove', handleTouchMove);
         });
+
+        // 复制文本到剪贴板函数
+        async function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    showToast(`已复制 "${text}"`);
+                } catch (error) {
+                    console.error('复制失败:', error);
+                    showToast('复制失败，请手动复制');
+                }
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast(`已复制 "${text}"`);
+                } catch (error) {
+                    console.error('复制失败:', error);
+                    showToast('复制失败，请手动复制');
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            }
+        }
+
+        // 显示 Toast 提示 
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
     </script>
 </body>
 
